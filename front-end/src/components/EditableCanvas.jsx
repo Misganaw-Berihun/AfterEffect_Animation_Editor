@@ -93,15 +93,13 @@ const EditableCanvas = () => {
     var b = parseInt(hex.substring(4, 6), 16);
     
     return [ r, g, b ];
-}
+  }
 
   const handleColorChange = (event) => {
     const colorValue = event.target.value
-    console.log(colorValue)
     const colorArray = hexToRgb(colorValue).map(v => v / 255)
     
     setColor(colorValue)
-    console.log(colorArray)
 
     if (animationData) {
       const updatedAnimationData = {
@@ -151,21 +149,29 @@ const EditableCanvas = () => {
     }
   };
   
-
   const handleFinish = async () => {
+    const fileName = window.prompt("Enter the file name:");
+  
+    if (!fileName) {
+      console.log("File saving canceled.");
+      return;
+    }
+  
     const htmlContent = generateHTML(animationData);
     const blob = new Blob([htmlContent], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    window.open(url);
 
+    const url = URL.createObjectURL(blob);
+  
+    window.open(url);
+  
     if (htmlContent) {
       try {
         const response = await fetch("http://localhost:8000/save_html/", {
           method: "POST",
           headers: {
-            "Content-Type":  "application/json"
+            "Content-Type": "application/json"
           },
-          body: JSON.stringify({ html: htmlContent })
+          body: JSON.stringify({ html: htmlContent, fileName: fileName })
         });
   
         if (response.ok) {
@@ -177,38 +183,54 @@ const EditableCanvas = () => {
         console.error("Error saving HTML content:", error);
       }
     }
-
   };
 
   return (
-    <div className="App">
-      <JsonFileUploader setAnimationData={setAnimationData} />
-      <div>
-        <label>Width: </label>
-        <input type="range" min="0" max="5000" value={width} onChange={handleWidthChange} />
-        <span>{width}</span>
-      </div>
-      <div>
-        <label>Height: </label>
-        <input type="range" min="0" max="5000" value={height} onChange={handleHeightChange} />
-        <span>{height}</span>
-      </div>
-      <div>
-        <label>Frame Speed: </label>
-        <input type="range" min="0" max="100" value={frameSpeed} onChange={handleFrameSpeedChange} />
-        <span>{frameSpeed}</span>
-      </div>
-      <div>
-        <label>Color: </label>
-        <input type="color" value={color} onChange={handleColorChange} />
-      </div>
-      <div>
-        <label>Opacity: </label>
-        <input type="range" min="0" max="100" value={opacity} onChange={handleOpacityChange} />
-        <span>{opacity}</span>
-      </div>
-      <button onClick={handleFinish}>Finish</button>
-      <div className="animation-container" ref={animationContainer} />
+    <div>
+        <div className="mt-12 text-center">
+            <h1 className="text-3xl font-bold">After Effects File Editor</h1>
+            <p className="text-gray-600">Customize your animation</p>
+        </div>
+        <div className="flex justify-center items-center h-screen">
+          <div className="container mx-auto p-8 flex">
+            <div className="flex-1 mr-8">
+              <div className="animation-container" ref={animationContainer} />
+            </div>
+            <div className="flex-1">
+              <JsonFileUploader setAnimationData={setAnimationData} />
+              <div className="my-4">
+                <label className="mr-4">Width: </label>
+                <input type="range" min="0" max="1000" value={width} onChange={handleWidthChange} className="mr-4" />
+                <span>{width}</span>
+              </div>
+              <div className="my-4">
+                <label className="mr-4">Height: </label>
+                <input type="range" min="0" max="1000" value={height} onChange={handleHeightChange} className="mr-4" />
+                <span>{height}</span>
+              </div>
+              <div className="my-4">
+                <label className="mr-4">Frame Speed: </label>
+                <input type="range" min="0" max="100" value={frameSpeed} onChange={handleFrameSpeedChange} className="mr-4" />
+                <span>{frameSpeed}</span>
+              </div>
+              <div className="my-4">
+                <label className="mr-4">Color: </label>
+                <input type="color" value={color} onChange={handleColorChange} className="mr-4" />
+              </div>
+              <div className="my-4">
+                <label className="mr-4">Opacity: </label>
+                <input type="range" min="0" max="100" value
+    ={opacity} onChange={handleOpacityChange} className="mr-4" />
+                <span>{opacity}</span>
+              </div>
+              <div className="my-4">
+                <button onClick={handleFinish} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+                  Finish
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
     </div>
   );
 };
