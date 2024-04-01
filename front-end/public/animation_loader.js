@@ -6,62 +6,6 @@
   const animationWidth = animationDataParsed.w;
   const animationHeight = animationDataParsed.h;
 
-  fabric.AEAnimation = fabric.util.createClass(fabric.Image, {
-    type: 'croppableimage',
-    initialize: function (AECanvas, options) {
-      options = options || {};
-      this.callSuper('initialize', AECanvas, options);
-      this._AECanvas = AECanvas;
-    },
-    drawCacheOnCanvas: function(ctx) {
-      ctx.drawImage(this._AECanvas, -this.width / 2, -this.height / 2);
-    },
-    _createCacheCanvas: function() {
-      console.log('override!!!');
-      this._cacheProperties = {};
-      this._cacheCanvas = this._AECanvas;
-      console.log(this._cacheCanvas);
-      this._cacheContext = this._cacheCanvas.getContext('2d');
-      this.dirty = true;
-    },
-    render: function(ctx) {
-      if (this.isNotVisible()) {
-        return;
-      }
-      if (this.canvas && this.canvas.skipOffscreen && !this.group && !this.isOnScreen()) {
-        return;
-      }
-      ctx.save();
-      this._setupCompositeOperation(ctx);
-      this.drawSelectionBackground(ctx);
-      this.transform(ctx);
-      this._setOpacity(ctx);
-      this._setShadow(ctx, this);
-      if (this.transformMatrix) {
-        ctx.transform.apply(ctx, this.transformMatrix);
-      }
-      this.clipTo && fabric.util.clipContext(this, ctx);
-      if (this.shouldCache()) {
-        if (!this._cacheCanvas) {
-          console.log('create cache');
-          this._createCacheCanvas();
-        }
-        this.drawCacheOnCanvas(ctx);
-      }
-      else {
-        console.log('remove cache and draw');
-        this._removeCacheCanvas();
-        this.dirty = false;
-        this.drawObject(ctx);
-        if (this.objectCaching && this.statefullCache) {
-          this.saveState({ propertySet: 'cacheProperties' });
-        }
-      }
-      this.clipTo && ctx.restore();
-      ctx.restore();
-    }
-  });
-
   const canvas = document.createElement('canvas');
   canvas.width = animationWidth;
   canvas.height = animationHeight;
@@ -106,7 +50,7 @@
     console.log('total duration', durationInSeconds);
     
     console.log('DOMLoaded');
-    const fabricImage = new fabric.AEAnimation(canvas, {
+    const fabricImage = new fabric.Image(canvas, {
       scaleX: 0.25,
       scaleY: 0.25,
       objectCaching: true
