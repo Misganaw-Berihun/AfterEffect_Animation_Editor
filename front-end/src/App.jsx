@@ -1,10 +1,9 @@
-import EditableCanvas from "./components/EditableCanvas";
-import JsonFileUploader from "./components/JsonFileUploader";
+import AnimationLoader from "./components/FabricCanvas";
 
 export default function App() {
   return (
     <div>
-      <EditableCanvas/>
+      <AnimationLoader/>
     </div>
   )
 }
