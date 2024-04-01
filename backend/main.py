@@ -19,8 +19,6 @@ app.add_middleware(
 UPLOAD_DIR = "./uploaded_json_files"
 
 
-
-
 @app.post("/upload/")
 async def upload_json_file(file: UploadFile = File(...)):
    try:
